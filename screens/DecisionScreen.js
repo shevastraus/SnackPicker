@@ -1,10 +1,11 @@
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 const DecisionScreen = () => {
     return (
-        <div>
+        <View>
             Decision Screen here.
-        </div>
+        </View>
     );
 };
 

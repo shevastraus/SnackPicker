@@ -1,10 +1,11 @@
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 const PeopleScreen = () => {
     return (
-        <div>
-            People Screen here.
-        </div>
+        <View>
+            <Text>People Screen here.</Text>
+        </View>
     );
 };
 
