@@ -1,12 +1,19 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-const RestaurantsScreen = () => {
+export default function RestaurantsScreen() {
     return (
-        <View>
-            Restaurants Screen here.
+        <View style={styles.container}>
+            <Text>Restaurants Screen here.</Text>
         </View>
     );
 };
 
-export default RestaurantsScreen;
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+});

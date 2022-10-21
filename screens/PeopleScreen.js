@@ -1,12 +1,19 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-const PeopleScreen = () => {
+export default function PeopleScreen() {
     return (
-        <View>
+        <View style={styles.container}>
             <Text>People Screen here.</Text>
         </View>
     );
 };
 
-export default PeopleScreen;
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+});

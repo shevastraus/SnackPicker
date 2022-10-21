@@ -7,32 +7,54 @@ import DecisionScreen from "./screens/DecisionScreen";
 import PeopleScreen from "./screens/PeopleScreen";
 import RestaurantsScreen from "./screens/RestaurantsScreen";
 import Constants from "expo-constants";
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-const Stack = createNativeStackNavigator();
+console.log("Hello!");
+console.log(`RestaurantChooser starting on ${Platform.OS}`);
+const platformOS = Platform.OS.toLowerCase();
 
-console.log("!!! ", Platform);
+// const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
-    // <View style={styles.container}>
-    //   <Text>Open up App.js to start working on your app!</Text>
-    //   <StatusBar style="auto" />
-    // </View>
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="PeopleScreen">
-        <Stack.Screen name="PeopleScreen" component={PeopleScreen} options={{ title: 'People' }} />
-        <Stack.Screen name="DecisionScreen" component={DecisionScreen} options={{ title: 'Decision' }} />
-        <Stack.Screen name="RestaurantsScreen" component={RestaurantsScreen} options={{ title: 'Restaurants' }} />
-      </Stack.Navigator>
+      <Tab.Navigator
+        initialRouteName='PeopleScreen'
+        backBehavior='none'
+        screenOptions={{
+          headerShown: false,
+          // tabBarIconStyle: { width: 32, height: 32 },
+          tabBarActiveTintColor: "#ff0000",
+          tabBarInactiveTintColor: 'gray',
+        }}
+      >
+        <Tab.Screen name="PeopleScreen" component={PeopleScreen} options={
+          {
+            title: 'People',
+            tabBarIcon: ({ color }) => (<Image source={require("./images/icon-people.png")} style={{ tintColor: color }} />)
+          }
+        } />
+        <Tab.Screen name="DecisionScreen" component={DecisionScreen} options={
+          {
+            title: 'Decision',
+            tabBarIcon: ({ color }) => (<Image source={require("./images/icon-decision.png")} style={{ tintColor: color }} />)
+          }
+        } />
+        <Tab.Screen name="RestaurantsScreen" component={RestaurantsScreen} options={
+          {
+            title: 'Restaurants',
+            tabBarIcon: ({ color }) => (<Image source={require("./images/icon-restaurants.png")} style={{ tintColor: color }} />)
+          }} />
+      </Tab.Navigator>
     </NavigationContainer>
   );
 }
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#fff',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-// });
+const styles = StyleSheet.create({
+  tab: {
+    width: 32,
+    height: 32,
+    // tintColor: color
+  },
+});
