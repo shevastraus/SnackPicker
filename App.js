@@ -5,12 +5,13 @@ import { NavigationContainer, StackActions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import DecisionScreen from "./screens/DecisionScreen";
 import PeopleScreen from "./screens/PeopleScreen";
-import RestaurantsScreen from "./screens/RestaurantsScreen";
+import SnacksScreen from "./screens/Snacks";
+import CustomButton from './components/CustomButton';
 import Constants from "expo-constants";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 console.log("Hello!");
-console.log(`RestaurantChooser starting on ${Platform.OS}`);
+console.log(`SnackPicker starting on ${Platform.OS}`);
 const platformOS = Platform.OS.toLowerCase();
 
 // const Stack = createNativeStackNavigator();
@@ -41,10 +42,10 @@ export default function App() {
             tabBarIcon: ({ color }) => (<Image source={require("./images/icon-decision.png")} style={{ tintColor: color }} />)
           }
         } />
-        <Tab.Screen name="RestaurantsScreen" component={RestaurantsScreen} options={
+        <Tab.Screen name="SnacksScreen" component={SnacksScreen} options={
           {
-            title: 'Restaurants',
-            tabBarIcon: ({ color }) => (<Image source={require("./images/icon-restaurants.png")} style={{ tintColor: color }} />)
+            title: 'Snacks',
+            tabBarIcon: ({ color }) => (<Image source={require("./images/icon-spoonfork.png")} style={{ tintColor: color }} />)
           }} />
       </Tab.Navigator>
     </NavigationContainer>
