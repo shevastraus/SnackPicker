@@ -10,6 +10,11 @@ import CustomButton from './components/CustomButton';
 import Constants from "expo-constants";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
+// To Do:
+// Change BG colour of Name field on Add Snack form page
+// Add edit functionality to snacks in list
+// Require snack attributes on form
+
 console.log("Hello!");
 console.log(`SnackPicker starting on ${Platform.OS}`);
 const platformOS = Platform.OS.toLowerCase();
@@ -21,7 +26,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName='PeopleScreen'
+        initialRouteName='DecisionScreen'
         backBehavior='none'
         screenOptions={{
           headerShown: false,
@@ -30,12 +35,12 @@ export default function App() {
           tabBarInactiveTintColor: 'gray',
         }}
       >
-        <Tab.Screen name="PeopleScreen" component={PeopleScreen} options={
+        {/* <Tab.Screen name="PeopleScreen" component={PeopleScreen} options={
           {
             title: 'People',
             tabBarIcon: ({ color }) => (<Image source={require("./images/icon-people.png")} style={{ tintColor: color }} />)
           }
-        } />
+        } /> */}
         <Tab.Screen name="DecisionScreen" component={DecisionScreen} options={
           {
             title: 'Decision',

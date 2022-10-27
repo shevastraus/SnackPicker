@@ -2,20 +2,15 @@ import React from 'react';
 import PropTypes from "prop-types";
 import { Platform, StyleSheet, Text, TextInput, View } from "react-native";
 
-export default function CustomTextInput({ label, labelStyle, maxLength, textInputStyle, stateHolder, stateFieldName }) {
+export default function CustomTextInput({ label, labelStyle, maxLength, textInputStyle, stateSetter, defaultText }) {
     return (
         <View>
             <Text style={[styles.fieldLabel, labelStyle]}>{label}</Text>
             <TextInput
+                defaultValue={defaultText}
                 maxLength={maxLength}
                 onChangeText={
-                    (inText) => stateHolder.setState(
-                        () => {
-                            const obj = {};
-                            obj[stateFieldName] = inText;
-                            return obj;
-                        }
-                    )
+                    (inText) => stateSetter(inText)
                 }
                 style={[styles.textInput, textInputStyle]}
             />
@@ -42,6 +37,6 @@ CustomTextInput.propTypes = {
     labelStyle: PropTypes.object,
     maxLength: PropTypes.number,
     textInputStyle: PropTypes.object,
-    stateHolder: PropTypes.object.isRequired,
+    stateSetter: PropTypes.func.isRequired,
     stateFieldName: PropTypes.string.isRequired
 };
