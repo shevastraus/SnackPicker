@@ -8,7 +8,7 @@ const AddSnackAttributes = ({ attributeField, attribute1, attribute2, state, sta
             <Text style={styles.fieldLabel}>{attributeField}</Text>
             <View style={styles.pickerContainer}>
                 <Picker style={styles.picker} prompt={attributeField} selectedValue={state} onValueChange={(inItemValue) => stateSetter(inItemValue)}>
-                    {/* <Picker.Item label="" value="" /> // Require? */}
+                    <Picker.Item label="" value="" />
                     <Picker.Item label={`${attribute1}`} value={`${attribute1}`} />
                     <Picker.Item label={`${attribute2}`} value={`${attribute2}`} />
                 </Picker>

@@ -10,13 +10,12 @@ import CustomButton from './components/CustomButton';
 import Constants from "expo-constants";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-// To Do:
-// Change BG colour of Name field on Add Snack form page
-// Add edit functionality to snacks in list
-// Require snack attributes on form
+// To Do (short term):
 
-console.log("Hello!");
-console.log(`SnackPicker starting on ${Platform.OS}`);
+// To do (long term):
+// 1. convert form to formik
+
+console.log(`Hello, dev! SnackPicker starting on ${Platform.OS}`);
 const platformOS = Platform.OS.toLowerCase();
 
 // const Stack = createNativeStackNavigator();

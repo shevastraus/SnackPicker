@@ -21,13 +21,24 @@ export default function CustomTextInput({ label, labelStyle, maxLength, textInpu
 const styles = StyleSheet.create({
     fieldLabel: { marginLeft: 10 },
     textInput: {
-        height: 40, marginLeft: 10, width: "96%", marginBottom: 20,
+        height: 40,
+        marginLeft: 10,
+        width: "96%",
+        marginBottom: 20,
         ...Platform.select({
             ios: {
                 marginTop: 4, paddingLeft: 10, borderRadius: 8,
                 borderColor: "#c0c0c0", borderWidth: 2
             },
-            android: {}
+            android: {
+                height: 52,
+                borderRadius: 8,
+                borderColor: "#c0c0c0",
+                borderWidth: 2,
+                paddingLeft: 10,
+                marginTop: 4,
+                fontSize: 16
+            }
         })
     }
 });

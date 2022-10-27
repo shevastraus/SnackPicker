@@ -24,6 +24,8 @@ export default function SnacksScreen() {
 
     const { getItem, setItem } = useAsyncStorage('@storage_key');
 
+    const toast = useToast();
+
     const readItemFromStorage = async () => {
         const item = await getItem();
         const itemParsed = item != null ? JSON.parse(item) : [];
@@ -32,9 +34,29 @@ export default function SnacksScreen() {
     }
 
     const writeItemToStorage = async newSnack => {
-        const newList = [...snackList, newSnack];
+        let newList;
+        let toastMessage;
+        // If key exists, an item is being edited
+        if (snackList.find(snack => snack.key === newSnack.key)) {
+            newList = snackList;
+            const editIndex = newList.findIndex(snack => snack.key === snackToEdit.key);
+            newList.splice(editIndex, 1, newSnack);
+            toastMessage = "successfully edited"
+        }
+        // Else, new item is being created
+        else {
+            newList = [...snackList, newSnack];
+            toastMessage = "successfully added to snack list"
+        }
         const newListStringified = JSON.stringify(newList);
         await setItem(newListStringified);
+        setSnackToEdit({});
+        toast.show({
+            placement: "bottom",
+            duration: 2000,
+            description: `${newSnack.name} ${toastMessage}`,
+            style: { backgroundColor: "green" }
+        });
         readItemFromStorage();
     }
 
@@ -56,8 +78,6 @@ export default function SnacksScreen() {
     //     } catch (e) {
     //         // clear error
     //     }
-
-    //     console.log('Done.')
     // }
 
     // clearAll();
@@ -97,6 +117,7 @@ const SnacksList = ({ navigation, snackList, handleDelete, setSnackToEdit, snack
         >
             <CustomButton
                 text="Add Snack"
+                buttonStyle={{ backgroundColor: "green" }}
                 width="94%"
                 onPress={
                     () => {
@@ -119,14 +140,15 @@ const SnacksList = ({ navigation, snackList, handleDelete, setSnackToEdit, snack
                         >{item.name}</Text>
                         <CustomButton
                             text="Edit"
+                            buttonStyle={{ paddingLeft: 20, paddingRight: 20 }}
                             onPress={() => {
-                                console.log(`Edit ${item.name} button pushed!`);
                                 setSnackToEdit(item);
                                 navigation.navigate("AddSnacks");
                             }}
                         />
                         <CustomButton
                             text="Delete"
+                            buttonStyle={{ backgroundColor: "red" }}
                             onPress={() => {
                                 Alert.alert(
                                     "Please confirm",
@@ -193,6 +215,7 @@ const AddSnacks = ({ navigation, snackList, handleAddSnack, snackToEdit, setSnac
                     <CustomButton
                         text="Cancel"
                         width="44%"
+                        buttonStyle={{ backgroundColor: "red" }}
                         onPress={() => {
                             setSnackToEdit({});
                             navigation.navigate("SnacksList");
@@ -201,9 +224,18 @@ const AddSnacks = ({ navigation, snackList, handleAddSnack, snackToEdit, setSnac
                         text="Save"
                         width="44%"
                         onPress={() => {
-                            if (snackList.find(snack => snack.name === name)) {
+                            if (!name || !texture || !healthy || !flavour || !temperature || !moistness) {
                                 toast.show({
-                                    placement: "bottom",
+                                    placement: "top",
+                                    duration: 5000,
+                                    description: `Please fill out all fields`,
+                                    style: { backgroundColor: "red" }
+                                });
+                                return;
+                            };
+                            if (snackList.find(snack => snack.name === name && snack.key !== key)) {
+                                toast.show({
+                                    placement: "top",
                                     duration: 5000,
                                     description: `${name} is already on your Snacks list`,
                                     style: { backgroundColor: "red" }
@@ -214,12 +246,6 @@ const AddSnacks = ({ navigation, snackList, handleAddSnack, snackToEdit, setSnac
                                         name, healthy, texture, flavour, temperature, moistness, key
                                     }
                                 );
-                                toast.show({
-                                    placement: "bottom",
-                                    duration: 2000,
-                                    description: `${name} has been added to your Snacks list`,
-                                    style: { backgroundColor: "green" }
-                                });
                                 navigation.navigate("SnacksList");
                             }
                         }}
