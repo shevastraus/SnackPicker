@@ -5,7 +5,12 @@
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "69248240-ff3a-44cc-b2ac-55d740436dec"
+      }
+    }
   },
   "name": "SnackPicker"
 }
