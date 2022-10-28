@@ -1,8 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View, Image, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { BackHandler, StyleSheet, Text, View, Image, Platform } from 'react-native';
 import { NavigationContainer, StackActions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import DecisionScreen from "./screens/DecisionScreen";
 import PeopleScreen from "./screens/PeopleScreen";
 import SnacksScreen from "./screens/Snacks";
@@ -22,6 +23,21 @@ const platformOS = Platform.OS.toLowerCase();
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  const [snackList, setSnackList] = useState([]);
+  const { getItem, setItem } = useAsyncStorage('@storage_key');
+
+  useEffect(() => {
+    BackHandler.addEventListener("hardwareBackPress", () => { return true; });
+    readItemFromStorage();
+  }, []);
+
+  const readItemFromStorage = async () => {
+    const item = await getItem();
+    const itemParsed = item != null ? JSON.parse(item) : [];
+    setSnackList(itemParsed);
+    console.log("Memory: ", item);
+  }
+
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -40,17 +56,47 @@ export default function App() {
             tabBarIcon: ({ color }) => (<Image source={require("./images/icon-people.png")} style={{ tintColor: color }} />)
           }
         } /> */}
-        <Tab.Screen name="DecisionScreen" component={DecisionScreen} options={
+
+
+
+        {/* <Tab.Screen name="DecisionScreen" component={DecisionScreen} options={
           {
             title: 'Decision',
             tabBarIcon: ({ color }) => (<Image source={require("./images/icon-decision.png")} style={{ tintColor: color }} />)
           }
-        } />
-        <Tab.Screen name="SnacksScreen" component={SnacksScreen} options={
+        } /> */}
+
+        <Tab.Screen name="DecisionScreen" options={
+          {
+            title: 'Decision',
+            tabBarIcon: ({ color }) => (<Image source={require("./images/icon-decision.png")} style={{ tintColor: color }} />)
+          }
+        }>
+          {(props) => <DecisionScreen
+            snackList={snackList}
+            {...props}
+          />}
+        </Tab.Screen>
+
+        {/* <Tab.Screen name="SnacksScreen" component={SnacksScreen} options={
           {
             title: 'Snacks',
             tabBarIcon: ({ color }) => (<Image source={require("./images/icon-spoonfork.png")} style={{ tintColor: color }} />)
-          }} />
+          }} /> */}
+
+        <Tab.Screen name="SnacksScreen" options={
+          {
+            title: 'Snacks',
+            tabBarIcon: ({ color }) => (<Image source={require("./images/icon-spoonfork.png")} style={{ tintColor: color }} />)
+          }
+        }>
+          {(props) => <SnacksScreen
+            snackList={snackList}
+            setSnackList={setSnackList}
+            readItemFromStorage={readItemFromStorage}
+            {...props}
+          />}
+        </Tab.Screen>
       </Tab.Navigator>
     </NavigationContainer>
   );

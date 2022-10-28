@@ -4,7 +4,7 @@ import {
     StyleSheet, Text, TouchableOpacity, View
 } from "react-native";
 import { Picker } from '@react-native-picker/picker';
-import AsyncStorage, { useAsyncStorage } from '@react-native-async-storage/async-storage';
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 // import { StackNavigator } from "react-navigation";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // import { Root, Toast } from "native-base";
@@ -16,8 +16,8 @@ import AddSnackAttributes from '../components/AddSnackAttributes';
 
 
 
-export default function SnacksScreen() {
-    const [snackList, setSnackList] = useState([]);
+export default function SnacksScreen({ snackList, setSnackList, readItemFromStorage, navigation }) {
+    // const [snackList, setSnackList] = useState([]);
     const [snackToEdit, setSnackToEdit] = useState({});
 
     const Stack = createNativeStackNavigator();
@@ -26,12 +26,12 @@ export default function SnacksScreen() {
 
     const toast = useToast();
 
-    const readItemFromStorage = async () => {
-        const item = await getItem();
-        const itemParsed = item != null ? JSON.parse(item) : [];
-        setSnackList(itemParsed);
-        console.log("Memory: ", item);
-    }
+    // const readItemFromStorage = async () => {
+    //     const item = await getItem();
+    //     const itemParsed = item != null ? JSON.parse(item) : [];
+    //     setSnackList(itemParsed);
+    //     console.log("Memory: ", item);
+    // }
 
     const writeItemToStorage = async newSnack => {
         let newList;
@@ -41,23 +41,24 @@ export default function SnacksScreen() {
             newList = snackList;
             const editIndex = newList.findIndex(snack => snack.key === snackToEdit.key);
             newList.splice(editIndex, 1, newSnack);
-            toastMessage = "successfully edited"
+            // toastMessage = "successfully edited"
         }
         // Else, new item is being created
         else {
             newList = [...snackList, newSnack];
-            toastMessage = "successfully added to snack list"
+            // toastMessage = "successfully added to snack list"
         }
         const newListStringified = JSON.stringify(newList);
         await setItem(newListStringified);
         setSnackToEdit({});
-        toast.show({
-            placement: "bottom",
-            duration: 2000,
-            description: `${newSnack.name} ${toastMessage}`,
-            style: { backgroundColor: "green" }
-        });
+        // toast.show({
+        //     placement: "bottom",
+        //     duration: 2000,
+        //     description: `${newSnack.name} ${toastMessage}`,
+        //     style: { backgroundColor: "green" }
+        // });
         readItemFromStorage();
+        navigation.navigate("SnacksList");
     }
 
     const removeItemFromStorage = async itemToRemove => {
@@ -67,10 +68,10 @@ export default function SnacksScreen() {
         readItemFromStorage();
     }
 
-    useEffect(() => {
-        BackHandler.addEventListener("hardwareBackPress", () => { return true; });
-        readItemFromStorage();
-    }, []);
+    // useEffect(() => {
+    //     BackHandler.addEventListener("hardwareBackPress", () => { return true; });
+    //     readItemFromStorage();
+    // }, []);
 
     // const clearAll = async () => {
     //     try {
@@ -246,7 +247,13 @@ const AddSnacks = ({ navigation, snackList, handleAddSnack, snackToEdit, setSnac
                                         name, healthy, texture, flavour, temperature, moistness, key
                                     }
                                 );
-                                navigation.navigate("SnacksList");
+                                const toastMessage = snackList.find(snackObj => snackObj.key === key) ? "successfully edited" : "successfully added to snacks list";
+                                toast.show({
+                                    placement: "bottom",
+                                    duration: 2000,
+                                    description: `${name} ${toastMessage}`,
+                                    style: { backgroundColor: "green" }
+                                });
                             }
                         }}
                     />
