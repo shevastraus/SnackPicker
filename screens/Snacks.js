@@ -41,22 +41,15 @@ export default function SnacksScreen({ snackList, setSnackList, readItemFromStor
             newList = snackList;
             const editIndex = newList.findIndex(snack => snack.key === snackToEdit.key);
             newList.splice(editIndex, 1, newSnack);
-            // toastMessage = "successfully edited"
         }
         // Else, new item is being created
         else {
             newList = [...snackList, newSnack];
-            // toastMessage = "successfully added to snack list"
         }
         const newListStringified = JSON.stringify(newList);
         await setItem(newListStringified);
         setSnackToEdit({});
-        // toast.show({
-        //     placement: "bottom",
-        //     duration: 2000,
-        //     description: `${newSnack.name} ${toastMessage}`,
-        //     style: { backgroundColor: "green" }
-        // });
+
         readItemFromStorage();
         navigation.navigate("SnacksList");
     }
@@ -202,15 +195,15 @@ const AddSnacks = ({ navigation, snackList, handleAddSnack, snackToEdit, setSnac
                 <View style={styles.addScreenFormContainer}>
                     <CustomTextInput label="Snack" maxLength={20} stateSetter={setName} stateFieldName={name} defaultText={name} />
 
-                    <AddSnackAttributes attributeField="Texture" attribute1="Crunchy/Crispy" attribute2="Chewy" state={texture} stateSetter={setTexture} />
+                    <AddSnackAttributes attributeField="Texture" attributes={["Crunchy/Crispy", "Chewy", "Liquid"]} state={texture} stateSetter={setTexture} />
 
-                    <AddSnackAttributes attributeField="Healthiness" attribute1="Healthy" attribute2="Not Healthy" state={healthy} stateSetter={setHealthy} />
+                    <AddSnackAttributes attributeField="Healthiness" attributes={["Healthy", "Not Healthy"]} state={healthy} stateSetter={setHealthy} />
 
-                    <AddSnackAttributes attributeField="Flavour" attribute1="Sweet" attribute2="Savoury/Salty" state={flavour} stateSetter={setFlavour} />
+                    <AddSnackAttributes attributeField="Flavour" attributes={["Sweet", "Savoury/Salty"]} state={flavour} stateSetter={setFlavour} />
 
-                    <AddSnackAttributes attributeField="Temperature" attribute1="Frozen" attribute2="Not frozen" state={temperature} stateSetter={setTemperature} />
+                    <AddSnackAttributes attributeField="Temperature" attributes={["Frozen", "Not frozen"]} state={temperature} stateSetter={setTemperature} />
 
-                    <AddSnackAttributes attributeField="Moistness" attribute1="Moist" attribute2="Dry" state={moistness} stateSetter={setMoistness} />
+                    <AddSnackAttributes attributeField="Moistness" attributes={["Moist", "Dry"]} state={moistness} stateSetter={setMoistness} />
                 </View>
                 <View style={styles.addScreenButtonsContainer}>
                     <CustomButton
@@ -270,7 +263,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         ...Platform.select({
             ios: { paddingTop: Constants.statusBarHeight },
-            android: { paddingTop: Constants.statusBarHeight }
+            android: {}
         })
     },
     snacksList: { width: "94%" },
@@ -280,7 +273,12 @@ const styles = StyleSheet.create({
         borderColor: "#e0e0e0", borderBottomWidth: 2, alignItems: "center"
     },
     snacksName: { flex: 1 },
-    addScreenContainer: { marginTop: Constants.statusBarHeight },
+    addScreenContainer: {
+        ...Platform.select({
+            ios: { paddingTop: Constants.statusBarHeight },
+            android: {}
+        })
+    },
     addScreenInnerContainer: { flex: 1, alignItems: "center", paddingTop: 20, width: "100%" },
     addScreenFormContainer: { width: "96%" },
     addScreenButtonsContainer: { flexDirection: "row", justifyContent: "center" },

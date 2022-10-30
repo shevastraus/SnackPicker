@@ -12,6 +12,7 @@ import Constants from "expo-constants";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 // To Do (short term):
+// 1. AddSnacks: CustomInputField Attribute 1 / 2 props should be changed to an array, and then should populate the options from the array. For texture, add "liquid" to the attribute array 
 
 // To do (long term):
 // 1. convert form to formik
@@ -57,15 +58,6 @@ export default function App() {
           }
         } /> */}
 
-
-
-        {/* <Tab.Screen name="DecisionScreen" component={DecisionScreen} options={
-          {
-            title: 'Decision',
-            tabBarIcon: ({ color }) => (<Image source={require("./images/icon-decision.png")} style={{ tintColor: color }} />)
-          }
-        } /> */}
-
         <Tab.Screen name="DecisionScreen" options={
           {
             title: 'Decision',
@@ -77,12 +69,6 @@ export default function App() {
             {...props}
           />}
         </Tab.Screen>
-
-        {/* <Tab.Screen name="SnacksScreen" component={SnacksScreen} options={
-          {
-            title: 'Snacks',
-            tabBarIcon: ({ color }) => (<Image source={require("./images/icon-spoonfork.png")} style={{ tintColor: color }} />)
-          }} /> */}
 
         <Tab.Screen name="SnacksScreen" options={
           {

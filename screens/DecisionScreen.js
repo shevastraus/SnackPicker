@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, Backhandler, Button, FlatList, Image, Modal, ssPlatform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Backhandler, Button, FlatList, Image, Modal, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -7,6 +7,7 @@ import { NativeBaseProvider, useToast, Checkbox } from "native-base";
 import Constants from "expo-constants";
 import CustomButton from '../components/CustomButton';
 import AddSnackAttributes from '../components/AddSnackAttributes';
+import SnackAttributesPickerForm from '../components/AddSnackAttributes';
 import { setStatusBarNetworkActivityIndicatorVisible } from 'expo-status-bar';
 // import { ItemClick } from 'native-base/lib/typescript/components/composites/Typeahead/useTypeahead/types';
 
@@ -111,15 +112,16 @@ const Moods = ({ navigation, snackList, snackMatchArraySetter }) => {
                         <Text style={styles.moodHeadline}>I'm in the mood for something...</Text>
                     </View>
                     <View>
-                        <AddSnackAttributes attributeField="Texture" attribute1="Crunchy/Crispy" attribute2="Chewy" state={texture} stateSetter={setTexture} isMoodSelection={true} />
 
-                        <AddSnackAttributes attributeField="Healthiness" attribute1="Healthy" attribute2="Not Healthy" state={healthy} stateSetter={setHealthy} isMoodSelection={true} />
+                        <AddSnackAttributes attributeField="Texture" attributes={["Crunchy/Crispy", "Chewy", "Liquid"]} state={texture} stateSetter={setTexture} isMoodSelection={true} />
 
-                        <AddSnackAttributes attributeField="Flavour" attribute1="Sweet" attribute2="Savoury/Salty" state={flavour} stateSetter={setFlavour} isMoodSelection={true} />
+                        <AddSnackAttributes attributeField="Healthiness" attributes={["Healthy", "Not Healthy"]} state={healthy} stateSetter={setHealthy} isMoodSelection={true} />
 
-                        <AddSnackAttributes attributeField="Temperature" attribute1="Frozen" attribute2="Not frozen" state={temperature} stateSetter={setTemperature} isMoodSelection={true} />
+                        <AddSnackAttributes attributeField="Flavour" attributes={["Sweet", "Savoury/Salty"]} state={flavour} stateSetter={setFlavour} isMoodSelection={true} />
 
-                        <AddSnackAttributes attributeField="Moistness" attribute1="Moist" attribute2="Dry" state={moistness} stateSetter={setMoistness} isMoodSelection={true} />
+                        <AddSnackAttributes attributeField="Temperature" attributes={["Frozen", "Not frozen"]} state={temperature} stateSetter={setTemperature} isMoodSelection={true} />
+
+                        <AddSnackAttributes attributeField="Moistness" attributes={["Moist", "Dry"]} state={moistness} stateSetter={setMoistness} isMoodSelection={true} />
 
                     </View>
                     <View style={styles.addScreenButtonsContainer}>
@@ -153,7 +155,7 @@ const Result = ({ navigation, snackMatchArray }) => {
             </View>
             <FlatList
                 style={styles.matchList}
-                keyExtractor={(item) => item.index}
+                keyExtractor={(item) => item}
                 ListEmptyComponent={<View style={styles.noResultsOuterContainer}><View style={styles.noResultsInnerContainer}><Text style={styles.noResultsTitle}>Terrible news!</Text><Text style={styles.noResultsMessage}> You are not in the mood for anything on your snack list! </Text><Text style={styles.noResultsEmoji}>😒😒😒😒😒</Text></View></View>}
                 data={snackMatchArray}
                 renderItem={(item) =>
@@ -195,7 +197,12 @@ const styles = StyleSheet.create({
         justifyContent: "center"
     },
     moodContainer:
-        { marginTop: Constants.statusBarHeight },
+    {
+        ...Platform.select({
+            ios: { marginTop: Constants.statusBarHeight },
+            android: {}
+        })
+    },
     moodInnerContainer: {
         flex: 1,
         alignItems: "center",
@@ -208,11 +215,14 @@ const styles = StyleSheet.create({
     fieldLabel: { marginLeft: 10 },
     addScreenButtonsContainer: { flexDirection: "row", justifyContent: "center" },
     matchListContainer: {
-        marginTop: Constants.statusBarHeight,
         flex: 1,
         alignItems: "center",
         paddingTop: 20,
-        width: "100%"
+        width: "100%",
+        ...Platform.select({
+            ios: { marginTop: Constants.statusBarHeight },
+            android: {}
+        })
     },
     matchList: { width: "90%", },
     noResultsOuterContainer: { flex: 1, justifyContent: "center" },

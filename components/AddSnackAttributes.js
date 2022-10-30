@@ -2,21 +2,39 @@ import React from 'react';
 import { Platform, StyleSheet, Text, TextInput, View } from "react-native";
 import { Picker } from '@react-native-picker/picker';
 
-const AddSnackAttributes = ({ attributeField, attribute1, attribute2, state, stateSetter, isMoodSelection }) => {
+// const snackAttributes = [
+//     { field: "Texture", attributes: ["Crunchy/Crispy", "Chewy", "Liquid"] },
+//     { field: "Healthiness", attributes: ["Healthy", "Not Healthy"] },
+//     { field: "Flavour", attributes: ["Sweet", "Savoury/Salty"] },
+//     { field: "Temperature", attributes: ["Frozen", "Not frozen"] },
+//     { field: "Moistness", attributes: ["Moist", "Dry"] },
+// ]
+
+const AddSnackAttributes = ({ attributeField, state, stateSetter, attributes, isMoodSelection }) => {
     return (
         <>
             <Text style={styles.fieldLabel}>{attributeField}</Text>
             <View style={styles.pickerContainer}>
                 <Picker style={styles.picker} prompt={attributeField} selectedValue={state} onValueChange={(inItemValue) => stateSetter(inItemValue)}>
-                    {isMoodSelection ? <Picker.Item label="No preference" value={false} /> : <Picker.Item label="" value="" />}
+                    {isMoodSelection ? <Picker.Item label="No preference" value={false} /> : <Picker.Item label="Choose one..." value="" />}
 
-                    <Picker.Item label={`${attribute1}`} value={`${attribute1}`} />
-                    <Picker.Item label={`${attribute2}`} value={`${attribute2}`} />
+                    {attributes.map(attribute =>
+                        <Picker.Item key={attribute} label={attribute} value={attribute} />
+                    )}
+
+                    {/* <Picker.Item label={`${attribute1}`} value={`${attribute1}`} />
+                    <Picker.Item label={`${attribute2}`} value={`${attribute2}`} /> */}
                 </Picker>
             </View>
         </>
     );
 };
+
+// const SnackAttributesPickerForm = ({ stateObjects }) => {
+//     // snackAttributes.map(attributeObj =>
+//     //     <AddSnackAttributes />
+//     // )
+// }
 
 const styles = StyleSheet.create({
     fieldLabel: { marginLeft: 10 },
