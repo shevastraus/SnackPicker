@@ -2,14 +2,6 @@ import React from 'react';
 import { Platform, StyleSheet, Text, TextInput, View } from "react-native";
 import { Picker } from '@react-native-picker/picker';
 
-// const snackAttributes = [
-//     { field: "Texture", attributes: ["Crunchy/Crispy", "Chewy", "Liquid"] },
-//     { field: "Healthiness", attributes: ["Healthy", "Not Healthy"] },
-//     { field: "Flavour", attributes: ["Sweet", "Savoury/Salty"] },
-//     { field: "Temperature", attributes: ["Frozen", "Not frozen"] },
-//     { field: "Moistness", attributes: ["Moist", "Dry"] },
-// ]
-
 const AddSnackAttributes = ({ attributeField, state, stateSetter, attributes, isMoodSelection }) => {
     return (
         <>
@@ -21,20 +13,11 @@ const AddSnackAttributes = ({ attributeField, state, stateSetter, attributes, is
                     {attributes.map(attribute =>
                         <Picker.Item key={attribute} label={attribute} value={attribute} />
                     )}
-
-                    {/* <Picker.Item label={`${attribute1}`} value={`${attribute1}`} />
-                    <Picker.Item label={`${attribute2}`} value={`${attribute2}`} /> */}
                 </Picker>
             </View>
         </>
     );
 };
-
-// const SnackAttributesPickerForm = ({ stateObjects }) => {
-//     // snackAttributes.map(attributeObj =>
-//     //     <AddSnackAttributes />
-//     // )
-// }
 
 const styles = StyleSheet.create({
     fieldLabel: { marginLeft: 10 },

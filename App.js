@@ -1,3 +1,8 @@
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(["We can not support a function callback. See Github Issues for details https://github.com/adobe/react-spectrum/issues/2320",]);
+console.disableYellowBox = true;
+
+
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
 import { BackHandler, StyleSheet, Text, View, Image, Platform } from 'react-native';
@@ -12,7 +17,8 @@ import Constants from "expo-constants";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 // To Do (short term):
-// 1. AddSnacks: CustomInputField Attribute 1 / 2 props should be changed to an array, and then should populate the options from the array. For texture, add "liquid" to the attribute array 
+// 1. When editing a snack, must add a check that the name does not already exist
+// 2. Change Frozen/Not Frozen to Cold/Not Cold
 
 // To do (long term):
 // 1. convert form to formik
@@ -35,14 +41,15 @@ export default function App() {
   const readItemFromStorage = async () => {
     const item = await getItem();
     const itemParsed = item != null ? JSON.parse(item) : [];
+    itemParsed.sort((a, b) => a.name > b.name ? 1 : -1);
     setSnackList(itemParsed);
-    console.log("Memory: ", item);
   }
 
   return (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName='DecisionScreen'
+        // change this back!
+        initialRouteName='SnacksScreen'
         backBehavior='none'
         screenOptions={{
           headerShown: false,
@@ -51,12 +58,6 @@ export default function App() {
           tabBarInactiveTintColor: 'gray',
         }}
       >
-        {/* <Tab.Screen name="PeopleScreen" component={PeopleScreen} options={
-          {
-            title: 'People',
-            tabBarIcon: ({ color }) => (<Image source={require("./images/icon-people.png")} style={{ tintColor: color }} />)
-          }
-        } /> */}
 
         <Tab.Screen name="DecisionScreen" options={
           {
