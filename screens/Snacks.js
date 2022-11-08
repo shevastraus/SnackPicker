@@ -1,46 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Alert, BackHandler, FlatList, Image, Platform, ScrollView,
+    Alert, FlatList, Image, Platform, ScrollView,
     StyleSheet, Text, TouchableOpacity, View
 } from "react-native";
-import { Picker } from '@react-native-picker/picker';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 // import { StackNavigator } from "react-navigation";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // import { Root, Toast } from "native-base";
-import { NativeBaseProvider, useToast } from "native-base";
+import { useToast } from "native-base";
 import Constants from "expo-constants";
+import startCase from 'lodash.startcase';
 import CustomButton from '../components/CustomButton';
 import CustomTextInput from '../components/CustomTextInput';
 import AddSnackAttributes from '../components/AddSnackAttributes';
 import { popularSnacks } from '../data/popularSnacks.js';
 
-
-
-export default function SnacksScreen({ snackList, setSnackList, readItemFromStorage, navigation }) {
-    // const [snackList, setSnackList] = useState([]);
+export default function SnacksScreen({ snackList, readItemFromStorage, navigation }) {
     const [snackToEdit, setSnackToEdit] = useState({});
 
     const Stack = createNativeStackNavigator();
 
-    const { getItem, setItem } = useAsyncStorage('@storage_key');
-
-    const toast = useToast();
-
-    // const readItemFromStorage = async () => {
-    //     const item = await getItem();
-    //     const itemParsed = item != null ? JSON.parse(item) : [];
-    //     setSnackList(itemParsed);
-    //     console.log("Memory: ", item);
-    // }
+    const { setItem } = useAsyncStorage('@storage_key');
 
     const writeItemToStorage = async newSnack => {
+        newSnack.name = startCase(newSnack.name);
         let newList;
-        let toastMessage;
         // If key exists, an item is being edited
         if (snackList.find(snack => snack.key === newSnack.key)) {
             newList = snackList;
             const editIndex = newList.findIndex(snack => snack.key === snackToEdit.key);
+            newSnack.key = `r_${new Date().getTime()}`;
             newList.splice(editIndex, 1, newSnack);
         }
         // Else, new item is being created
@@ -50,7 +39,6 @@ export default function SnacksScreen({ snackList, setSnackList, readItemFromStor
         const newListStringified = JSON.stringify(newList);
         await setItem(newListStringified);
         setSnackToEdit({});
-
         readItemFromStorage();
         navigation.navigate("SnacksList");
     }
@@ -70,54 +58,37 @@ export default function SnacksScreen({ snackList, setSnackList, readItemFromStor
         readItemFromStorage();
     }
 
-    // useEffect(() => {
-    //     BackHandler.addEventListener("hardwareBackPress", () => { return true; });
-    //     readItemFromStorage();
-    // }, []);
-
-    // const clearAll = async () => {
-    //     try {
-    //         await AsyncStorage.clear()
-    //     } catch (e) {
-    //         // clear error
-    //     }
-    // }
-
-    // clearAll();
-
     return (
-        <NativeBaseProvider>
-            <Stack.Navigator
-                initialRouteName='SnacksList'
-                backBehavior='none'
-                screenOptions={{
-                    headerShown: false
-                }}
-            >
-                <Stack.Screen name="SnacksList">
-                    {(props) => <SnacksList
-                        snackList={snackList}
-                        handleDelete={removeItemFromStorage}
-                        snackToEdit={snackToEdit}
-                        setSnackToEdit={setSnackToEdit}
-                        {...props} />}
-                </Stack.Screen>
-                <Stack.Screen name="AddSnacks">
-                    {(props) => <AddSnacks snackList={snackList} handleAddSnack={writeItemToStorage} snackToEdit={snackToEdit} setSnackToEdit={setSnackToEdit} {...props} />}
-                </Stack.Screen>
-                <Stack.Screen name="DefaultSnackList">
-                    {(props) => <DefaultSnackList
-                        snackList={snackList}
-                        handleAddSnack={writeArrayToStorage}
-                        handleDelete={removeItemFromStorage}
-                        {...props} />}
-                </Stack.Screen>
-            </Stack.Navigator>
-        </NativeBaseProvider>
+        <Stack.Navigator
+            initialRouteName='SnacksList'
+            backBehavior='none'
+            screenOptions={{
+                headerShown: false
+            }}
+        >
+            <Stack.Screen name="SnacksList">
+                {(props) => <SnacksList
+                    snackList={snackList}
+                    handleDelete={removeItemFromStorage}
+                    snackToEdit={snackToEdit}
+                    setSnackToEdit={setSnackToEdit}
+                    {...props} />}
+            </Stack.Screen>
+            <Stack.Screen name="AddSnacks">
+                {(props) => <AddSnacks snackList={snackList} handleAddSnack={writeItemToStorage} snackToEdit={snackToEdit} setSnackToEdit={setSnackToEdit} {...props} />}
+            </Stack.Screen>
+            <Stack.Screen name="DefaultSnackList">
+                {(props) => <DefaultSnackList
+                    snackList={snackList}
+                    handleAddSnack={writeArrayToStorage}
+                    handleDelete={removeItemFromStorage}
+                    {...props} />}
+            </Stack.Screen>
+        </Stack.Navigator>
     );
 };
 
-const SnacksList = ({ navigation, snackList, handleDelete, setSnackToEdit, snackToEdit }) => {
+const SnacksList = ({ navigation, snackList, handleDelete, setSnackToEdit }) => {
 
     const toast = useToast();
 
@@ -197,11 +168,11 @@ const SnacksList = ({ navigation, snackList, handleDelete, setSnackToEdit, snack
 const AddSnacks = ({ navigation, snackList, handleAddSnack, snackToEdit, setSnackToEdit }) => {
     const [name, setName] = useState(snackToEdit.name || "");
     const [healthy, setHealthy] = useState(snackToEdit.healthy || "");
-    const [texture, setTexture] = useState(snackToEdit.texture || ""); // crunchy/chewy
-    const [flavour, setFlavour] = useState(snackToEdit.flavour || ""); // sweetSavoury
-    const [temperature, setTemperature] = useState(snackToEdit.temperature || ""); // Cold/Not Cold
-    const [moistness, setMoistness] = useState(snackToEdit.moistness || ""); // wet/dry
-    const [key, setKey] = useState(snackToEdit.key || `r_${new Date().getTime()}`);
+    const [texture, setTexture] = useState(snackToEdit.texture || "");
+    const [flavour, setFlavour] = useState(snackToEdit.flavour || "");
+    const [temperature, setTemperature] = useState(snackToEdit.temperature || "");
+    const [moistness, setMoistness] = useState(snackToEdit.moistness || "");
+    const [key] = useState(snackToEdit.key || `r_${new Date().getTime()}`);
 
     const toast = useToast();
 
@@ -281,30 +252,21 @@ const AddSnacks = ({ navigation, snackList, handleAddSnack, snackToEdit, setSnac
     )
 }
 
-const DefaultSnackList = ({ navigation, snackList, handleAddSnack, handleDelete, snackToEdit = "", setSnackToEdit = () => { } }) => {
+const DefaultSnackList = ({ navigation, snackList, handleAddSnack }) => {
     const [defaultSnacks, setDefaultSnacks] = useState([])
     const [selectedSnacks, setSelectedSnacks] = useState([]);
-    // const [resetChecks, setResetChecks] = useState(true);
     useEffect(() => {
-        const filteredList = () => popularSnacks.filter(obj1 => !snackList.some(obj2 => obj1.key === obj2.key));
+        const filteredList = () => popularSnacks.filter(obj1 => !snackList.some(obj2 => obj1.name === obj2.name));
         setDefaultSnacks(filteredList);
-        console.log("checks reset");
     }, []);
-
-    useEffect(() => {
-        console.log("state selected snacks updated: ", selectedSnacks);
-    }, [selectedSnacks]);
 
     const toast = useToast();
 
     const onCheck = (key) => {
         let listCopy = JSON.parse(JSON.stringify(defaultSnacks));
         let index = listCopy.findIndex(snack => snack.key === key);
-
         listCopy[index].checked = !listCopy[index].checked;
-
         setDefaultSnacks([...listCopy]);
-
         let selected = [listCopy.filter(snackObj => snackObj.checked === true)];
         setSelectedSnacks(...selected);
     }
@@ -328,7 +290,7 @@ const DefaultSnackList = ({ navigation, snackList, handleAddSnack, handleDelete,
                             {snackObj.item.checked === true ?
                                 (<Image source={require('../images/checkboxChecked.png')} style={styles.defaultSnacksCheckbox} />) : (<Image source={require('../images/checkboxEmpty.png')} style={styles.defaultSnacksCheckbox} />)}
                             {snackObj.item.checked === true ?
-                                (<Text style={{ ...styles.defaultSnacksName, fontWeight: "bold" }}>{snackObj.item.name}, {snackObj.item.checked.toString()}</Text>) : (<Text style={styles.defaultSnacksName}>{snackObj.item.name}</Text>)}
+                                (<Text style={{ ...styles.defaultSnacksName, fontWeight: "bold" }}>{snackObj.item.name}</Text>) : (<Text style={styles.defaultSnacksName}>{snackObj.item.name}</Text>)}
                         </TouchableOpacity>
                     }
                 />
@@ -346,9 +308,7 @@ const DefaultSnackList = ({ navigation, snackList, handleAddSnack, handleDelete,
                     width="44%"
                     buttonStyle={{ backgroundColor: "green" }}
                     onPress={() => {
-                        console.log("selected length:", selectedSnacks.length);
                         if (selectedSnacks.length === 0) {
-                            console.log("No snacks selected");
                             toast.show({
                                 placement: "top",
                                 duration: 5000,
@@ -357,43 +317,7 @@ const DefaultSnackList = ({ navigation, snackList, handleAddSnack, handleDelete,
                             });
                             return;
                         };
-
-                        // Check names to make sure they don't already appear in the snackList:
-                        // map over the selectedSnacks array and check if each item's name matches an item in the snacksList array. If yes, replace the item in snackList with the new item, i.e. delete the one in snackList before adding the new snack(s)
-                        console.log("selected snacks to be added: ", selectedSnacks);
-                        selectedSnacks.forEach(selectedSnack => {
-                            console.log("forEach: ", selectedSnack);
-                            const repeatedSnackIndex = snackList.findIndex(originalSnack => originalSnack.name === selectedSnack.name);
-                            console.log("repeated snack index: ", repeatedSnackIndex);
-                            if (repeatedSnackIndex === -1) {
-                                console.log(`${selectedSnack.name} is a unique snack!`);
-                                return;
-                            } else {
-                                console.log(`${selectedSnack.name} is a repeated snack!`);
-                                // delete the original instance of this snack from snackList
-                                handleDelete(selectedSnack);
-                                return
-                            }
-                        })
-
-
-
-                        // If no names are repeats, continue...
-                        //  to add new object
-
-                        // selectedSnacks.forEach(snack => {
-                        //     console.log(`${snack.name} about to be added!`);
-                        //     handleAddSnack(
-                        //         {
-                        //             name: snack.name, healthy: snack.healthy, texture: snack.texture, flavour: snack.flavour, temperature: snack.temperature, moistness: snack.moistness, key: snack.key
-                        //         }
-                        //     );
-                        //     console.log(`${snack.name} added!`);
-
-                        // })
                         handleAddSnack(selectedSnacks);
-
-
                         toast.show({
                             placement: "bottom",
                             duration: 2000,
@@ -413,16 +337,13 @@ const styles = StyleSheet.create({
     listScreenContainer: {
         flex: 1,
         alignItems: "center",
-        // justifyContent: "center",
         ...Platform.select({
             ios: { paddingTop: Constants.statusBarHeight },
             android: {}
         }),
-        // backgroundColor: "green"
     },
     snacksList: {
         width: "94%",
-        // backgroundColor: "pink"
     },
     snacksListPlaceholder: { textAlign: "center", fontSize: 20, fontStyle: "italic", marginTop: 8 },
     snacksContainer: {
@@ -459,44 +380,27 @@ const styles = StyleSheet.create({
         })
     },
     moodScreenFormContainer: { width: "96%" },
-    // moodHeadlineContainer: {
-    //     // flex: 1,
-    //     alignItems: "center",
-    //     justifyContent: "center",
-    //     backgroundColor: "red"
-    // },
     moodHeadline: {
         fontSize: 30,
         marginTop: 20,
         marginBottom: 20,
         textAlign: "center",
-        // backgroundColor: "blue"
     },
     defaultSnacksTouchable: {
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        // marginTop: 6,
-        // marginBottom: 6,
         paddingBottom: 12,
         paddingTop: 12,
         borderColor: "#e0e0e0",
         borderBottomWidth: 2,
-        // backgroundColor: "yellow",
         width: "100%",
     },
     defaultSnacksName: {
         flex: 1,
         fontSize: 20,
-        // backgroundColor: "pink"
     },
     defaultSnacksCheckbox: {
         marginRight: 16,
-        // paddingRight: 20,
-
-
-        // paddingTop: 20,
-        // marginBottom: 20,
-
     },
 });

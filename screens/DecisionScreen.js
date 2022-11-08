@@ -1,60 +1,42 @@
 import React, { useState } from 'react';
-import { Alert, Backhandler, Button, FlatList, Image, Modal, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useAsyncStorage } from '@react-native-async-storage/async-storage';
-import { Picker } from '@react-native-picker/picker';
+import { Alert, FlatList, Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NativeBaseProvider, useToast, Checkbox } from "native-base";
 import Constants from "expo-constants";
 import CustomButton from '../components/CustomButton';
 import AddSnackAttributes from '../components/AddSnackAttributes';
-import SnackAttributesPickerForm from '../components/AddSnackAttributes';
-import { setStatusBarNetworkActivityIndicatorVisible } from 'expo-status-bar';
-// import { ItemClick } from 'native-base/lib/typescript/components/composites/Typeahead/useTypeahead/types';
 
-let participants;
-let filteredSnacks;
-let chosenSnack;
-
-const getRandom = (inMin, inMax) => {
-    inMin = Math.ceil(inMin);
-    inMax = Math.floor(inMax);
-    return Math.floor(Math.random() * (inMax - inMin + 1)) + inMin;
-};
-
-export default function DecisionScreen({ navigation, snackList }) {
+export default function DecisionScreen({ snackList }) {
     const [snackMatchArray, setSnackMatchArray] = useState([]);
     const Stack = createNativeStackNavigator();
 
     return (
-        <NativeBaseProvider>
-            <Stack.Navigator
-                initialRouteName='DecisionTime'
-                backBehavior='none'
-                screenOptions={{
-                    headerShown: false
-                }}
-            >
-                <Stack.Screen name="DecisionTime">
-                    {(props) => <DecisionTime
-                        isSnackList={snackList.length}
-                        {...props}
-                    />}
-                </Stack.Screen>
-                <Stack.Screen name="Moods">
-                    {(props) => <Moods
-                        snackList={snackList}
-                        snackMatchArraySetter={setSnackMatchArray}
-                        {...props}
-                    />}
-                </Stack.Screen>
-                <Stack.Screen name="Result">
-                    {(props) => <Result
-                        snackMatchArray={snackMatchArray}
-                        {...props}
-                    />}
-                </Stack.Screen>
-            </Stack.Navigator>
-        </NativeBaseProvider>
+        <Stack.Navigator
+            initialRouteName='DecisionTime'
+            backBehavior='none'
+            screenOptions={{
+                headerShown: false
+            }}
+        >
+            <Stack.Screen name="DecisionTime">
+                {(props) => <DecisionTime
+                    isSnackList={snackList.length}
+                    {...props}
+                />}
+            </Stack.Screen>
+            <Stack.Screen name="Moods">
+                {(props) => <Moods
+                    snackList={snackList}
+                    snackMatchArraySetter={setSnackMatchArray}
+                    {...props}
+                />}
+            </Stack.Screen>
+            <Stack.Screen name="Result">
+                {(props) => <Result
+                    snackMatchArray={snackMatchArray}
+                    {...props}
+                />}
+            </Stack.Screen>
+        </Stack.Navigator>
     );
 };
 
@@ -81,11 +63,10 @@ const DecisionTime = ({ navigation, isSnackList }) => {
 
 const Moods = ({ navigation, snackList, snackMatchArraySetter }) => {
     const [healthy, setHealthy] = useState("");
-    const [texture, setTexture] = useState(""); // crunchy/chewy
-    const [flavour, setFlavour] = useState(""); // sweet/savoury
-    const [temperature, setTemperature] = useState(""); // frozen
-    const [moistness, setMoistness] = useState(""); // wet/dry
-    const [selected, setSelected] = useState({})
+    const [texture, setTexture] = useState("");
+    const [flavour, setFlavour] = useState("");
+    const [temperature, setTemperature] = useState("");
+    const [moistness, setMoistness] = useState("");
 
     const filterSnacks = () => {
         let matchedSnacks = [];
@@ -112,17 +93,15 @@ const Moods = ({ navigation, snackList, snackMatchArraySetter }) => {
                         <Text style={styles.moodHeadline}>I'm in the mood for something...</Text>
                     </View>
                     <View>
-
-                        <AddSnackAttributes attributeField="Texture" attributes={["Crunchy/Crispy", "Chewy", "Liquid"]} state={texture} stateSetter={setTexture} isMoodSelection={true} />
+                        <AddSnackAttributes attributeField="Texture" attributes={["Crunchy/Crispy", "Chewy/Creamy", "Liquid"]} state={texture} stateSetter={setTexture} isMoodSelection={true} />
 
                         <AddSnackAttributes attributeField="Healthiness" attributes={["Healthy", "Not Healthy"]} state={healthy} stateSetter={setHealthy} isMoodSelection={true} />
 
                         <AddSnackAttributes attributeField="Flavour" attributes={["Sweet", "Savoury/Salty"]} state={flavour} stateSetter={setFlavour} isMoodSelection={true} />
 
-                        <AddSnackAttributes attributeField="Temperature" attributes={["Frozen", "Not frozen"]} state={temperature} stateSetter={setTemperature} isMoodSelection={true} />
+                        <AddSnackAttributes attributeField="Temperature" attributes={["Cold", "Not Cold"]} state={temperature} stateSetter={setTemperature} isMoodSelection={true} />
 
                         <AddSnackAttributes attributeField="Moistness" attributes={["Moist", "Dry"]} state={moistness} stateSetter={setMoistness} isMoodSelection={true} />
-
                     </View>
                     <View style={styles.addScreenButtonsContainer}>
                         <CustomButton
@@ -156,7 +135,15 @@ const Result = ({ navigation, snackMatchArray }) => {
             <FlatList
                 style={styles.matchList}
                 keyExtractor={(item) => item}
-                ListEmptyComponent={<View style={styles.noResultsOuterContainer}><View style={styles.noResultsInnerContainer}><Text style={styles.noResultsTitle}>Terrible news!</Text><Text style={styles.noResultsMessage}> You are not in the mood for anything on your snack list! </Text><Text style={styles.noResultsEmoji}>😒😒😒😒😒</Text></View></View>}
+                ListEmptyComponent={
+                    <View style={styles.noResultsOuterContainer}>
+                        <View style={styles.noResultsInnerContainer}>
+                            <Text style={styles.noResultsTitle}>Terrible news!</Text>
+                            <Text style={styles.noResultsMessage}> You are not in the mood for anything on your snack list! </Text>
+                            <Text style={styles.noResultsEmoji}>😒😒😒😒😒</Text>
+                        </View>
+                    </View>
+                }
                 data={snackMatchArray}
                 renderItem={(item) =>
                     <View style={styles.snacksContainer}>
@@ -183,8 +170,6 @@ const Result = ({ navigation, snackMatchArray }) => {
 
     )
 }
-
-
 
 const styles = StyleSheet.create({
     decisionTimeScreenContainer: {
@@ -238,17 +223,3 @@ const styles = StyleSheet.create({
         fontSize: 24
     }
 });
-
-// Checkbox test:
-// <Checkbox
-//     aria-label="Test checkbox"
-//     style={styles.checkbox}
-//     // checked={selected[item.key]}
-//     checked={selected}
-//     onPress={() => {
-//         // const selectedCopy = selected;
-//         // selectedCopy[item.key] = !selected[item.key];
-//         // setSelected(selectedCopy);
-//         console.log("Check!");
-//     }}
-// />
