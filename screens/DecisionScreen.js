@@ -6,7 +6,7 @@ import CustomButton from '../components/CustomButton';
 import AddSnackAttributes from '../components/AddSnackAttributes';
 
 export default function DecisionScreen({ snackList }) {
-    const [snackMatchArray, setSnackMatchArray] = useState([]);
+    const [snackMatch, setSnackMatch] = useState([]);
     const Stack = createNativeStackNavigator();
 
     return (
@@ -26,13 +26,13 @@ export default function DecisionScreen({ snackList }) {
             <Stack.Screen name="Moods">
                 {(props) => <Moods
                     snackList={snackList}
-                    snackMatchArraySetter={setSnackMatchArray}
+                    snackMatchSetter={setSnackMatch}
                     {...props}
                 />}
             </Stack.Screen>
             <Stack.Screen name="Result">
                 {(props) => <Result
-                    snackMatchArray={snackMatchArray}
+                    snackMatch={snackMatch}
                     {...props}
                 />}
             </Stack.Screen>
@@ -53,20 +53,27 @@ const DecisionTime = ({ navigation, isSnackList }) => {
                     }
                 }}
             >
+                {/* <Image source={require("../images/its-decision-time.png")} /> */}
                 <Image source={require("../images/its-decision-time.android.png")} />
-                <Text style={{ paddingTop: 20 }}>Tap here to get started!</Text>
+                <Text style={{ paddingTop: 15 }}>Tap to get started!</Text>
 
             </TouchableOpacity>
         </View>
     );
 }
 
-const Moods = ({ navigation, snackList, snackMatchArraySetter }) => {
+const Moods = ({ navigation, snackList, snackMatchSetter }) => {
     const [healthy, setHealthy] = useState("");
     const [texture, setTexture] = useState("");
     const [flavour, setFlavour] = useState("");
     const [temperature, setTemperature] = useState("");
     const [moistness, setMoistness] = useState("");
+
+    const getRandom = (inMin, inMax) => {
+        inMin = Math.ceil(inMin);
+        inMax = Math.floor(inMax);
+        return Math.floor(Math.random() * (inMax - inMin + 1)) + inMin;
+    };
 
     const filterSnacks = () => {
         let matchedSnacks = [];
@@ -82,7 +89,8 @@ const Moods = ({ navigation, snackList, snackMatchArraySetter }) => {
                 matchedSnacks.push(snackObj.name);
             };
         });
-        snackMatchArraySetter(matchedSnacks);
+        const randomIndex = getRandom(0, matchedSnacks.length - 1);
+        snackMatchSetter(matchedSnacks[randomIndex]);
     }
 
     return (
@@ -126,11 +134,11 @@ const Moods = ({ navigation, snackList, snackMatchArraySetter }) => {
     )
 }
 
-const Result = ({ navigation, snackMatchArray }) => {
+const Result = ({ navigation, snackMatch }) => {
     return (
         <View style={styles.matchListContainer}>
             <View style={styles.moodScreenFormContainer}>
-                <Text style={styles.moodHeadline}>💥 Results 💥</Text>
+                <Text style={styles.moodHeadline}>🤤 Snack Match 🤤</Text>
             </View>
             <FlatList
                 style={styles.matchList}
@@ -144,15 +152,17 @@ const Result = ({ navigation, snackMatchArray }) => {
                         </View>
                     </View>
                 }
-                data={snackMatchArray}
+                data={snackMatch && [snackMatch]}
                 renderItem={(item) =>
                     <View style={styles.snacksContainer}>
+                        <Text style={styles.snacksContainerText}>💥💥💥💥💥</Text>
                         <Text style={styles.snacksContainerText}>{item.item}</Text>
+                        <Text style={styles.snacksContainerText}>💥💥💥💥💥</Text>
                     </View>
                 }
             />
             <View style={styles.moodScreenFormContainer}>
-                {snackMatchArray.length ?
+                {snackMatch ?
                     <Text style={styles.moodHeadline}>Enjoy your snack!</Text> :
                     <Text style={styles.noResultsMessage}>Add more items to your snack list or reduce your preferences for better results.</Text>}
             </View>
@@ -207,19 +217,22 @@ const styles = StyleSheet.create({
         ...Platform.select({
             ios: { marginTop: Constants.statusBarHeight },
             android: {}
-        })
+        }),
     },
-    matchList: { width: "90%", },
+    matchList: { width: "90%", marginTop: 50 },
     noResultsOuterContainer: { flex: 1, justifyContent: "center" },
     noResultsInnerContainer: { width: "94%" },
     noResultsTitle: { textAlign: "center", fontSize: 30, fontStyle: "italic", marginTop: 8, alignSelf: "center" },
     noResultsEmoji: { textAlign: "center", fontSize: 20, marginTop: 8, alignSelf: "center" },
     noResultsMessage: { textAlign: "center", fontSize: 20, fontStyle: "italic", marginTop: 8, alignSelf: "center" },
     snacksContainer: {
-        flexDirection: "row", marginTop: 4, marginBottom: 4,
-        borderColor: "#e0e0e0", borderBottomWidth: 2, alignItems: "center",
+        marginTop: 4,
+        marginBottom: 4,
+        alignItems: "center",
     },
     snacksContainerText: {
-        fontSize: 24
+        fontSize: 50,
+        flex: 1,
+        textAlign: "center",
     }
 });

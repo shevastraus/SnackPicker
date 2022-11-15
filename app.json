@@ -1,7 +1,10 @@
 {
   "expo": {
     "name": "SnackPicker",
+    "description": "I'm hungry! ...What should I eat?",
     "slug": "SnackPicker",
+    "icon": "appIcon.png",
+    "splash" : { "image": "splash.png", "resizeMode": "cover" },
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"

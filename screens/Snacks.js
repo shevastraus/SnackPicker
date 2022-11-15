@@ -58,6 +58,19 @@ export default function SnacksScreen({ snackList, readItemFromStorage, navigatio
         readItemFromStorage();
     }
 
+
+    const removeArrayFromStorage = async arrayToKeep => {
+        const arrayStringified = JSON.stringify(arrayToKeep);
+        await setItem(arrayStringified);
+        readItemFromStorage();
+    }
+
+    // Uncomment this and reload app to clear local data storage:
+    // const clearAll = async () => {
+    //     await setItem(JSON.stringify([]));
+    // }
+    // clearAll();
+
     return (
         <Stack.Navigator
             initialRouteName='SnacksList'
@@ -77,6 +90,19 @@ export default function SnacksScreen({ snackList, readItemFromStorage, navigatio
             <Stack.Screen name="AddSnacks">
                 {(props) => <AddSnacks snackList={snackList} handleAddSnack={writeItemToStorage} snackToEdit={snackToEdit} setSnackToEdit={setSnackToEdit} {...props} />}
             </Stack.Screen>
+
+
+
+            <Stack.Screen name="DeleteSnacks">
+                {(props) => <DeleteSnacks
+                    snackList={snackList}
+                    handleDelete={removeArrayFromStorage}
+                    {...props} />}
+            </Stack.Screen>
+
+
+
+
             <Stack.Screen name="DefaultSnackList">
                 {(props) => <DefaultSnackList
                     snackList={snackList}
@@ -96,16 +122,29 @@ const SnacksList = ({ navigation, snackList, handleDelete, setSnackToEdit }) => 
         <View
             style={styles.listScreenContainer}
         >
-            <CustomButton
-                text="Add Snack"
-                buttonStyle={{ backgroundColor: "green" }}
-                width="94%"
-                onPress={
-                    () => {
-                        navigation.navigate("AddSnacks");
+            <View style={styles.addScreenButtonsContainer}>
+                <CustomButton
+                    text="Add Snack"
+                    buttonStyle={{ backgroundColor: "green" }}
+                    width="44%"
+                    onPress={
+                        () => {
+                            navigation.navigate("AddSnacks");
+                        }
                     }
-                }
-            />
+                />
+                <CustomButton
+                    text="Delete Snacks"
+                    buttonStyle={{ backgroundColor: "red" }}
+                    width="44%"
+                    onPress={
+                        () => {
+                            navigation.navigate("DeleteSnacks");
+                        }
+                    }
+                />
+            </View>
+
             <FlatList
                 style={styles.snacksList}
                 keyExtractor={item => item.name}
@@ -118,7 +157,7 @@ const SnacksList = ({ navigation, snackList, handleDelete, setSnackToEdit }) => 
                     >
                         <Text
                             style={styles.snacksName}
-                        >{item.name}</Text>
+                        >{item.name} {item.emoji}</Text>
                         <CustomButton
                             text="Edit"
                             buttonStyle={{ paddingLeft: 20, paddingRight: 20 }}
@@ -127,7 +166,9 @@ const SnacksList = ({ navigation, snackList, handleDelete, setSnackToEdit }) => 
                                 navigation.navigate("AddSnacks");
                             }}
                         />
-                        <CustomButton
+
+
+                        {/* <CustomButton
                             text="Delete"
                             buttonStyle={{ backgroundColor: "red" }}
                             onPress={() => {
@@ -147,7 +188,6 @@ const SnacksList = ({ navigation, snackList, handleDelete, setSnackToEdit }) => 
                                                 });
                                             }
                                         },
-                                        { text: "No" },
                                         {
                                             text: "Cancel",
                                             style: "cancel"
@@ -156,7 +196,9 @@ const SnacksList = ({ navigation, snackList, handleDelete, setSnackToEdit }) => 
                                     { cancelable: true }
                                 )
                             }}
-                        />
+                        /> */}
+
+
                     </View>
                 }
             />
@@ -225,7 +267,7 @@ const AddSnacks = ({ navigation, snackList, handleAddSnack, snackToEdit, setSnac
                             } else {
                                 handleAddSnack(
                                     {
-                                        name, healthy, texture, flavour, temperature, moistness, key
+                                        name, healthy, texture, flavour, temperature, moistness, key, checked: false
                                     }
                                 );
                                 const toastMessage = snackList.find(snackObj => snackObj.key === key) ? "successfully edited" : "successfully added to snacks list";
@@ -252,6 +294,94 @@ const AddSnacks = ({ navigation, snackList, handleAddSnack, snackToEdit, setSnac
     )
 }
 
+const DeleteSnacks = ({ navigation, snackList, handleDelete }) => {
+    const [checkedSnackList, setCheckedSnackList] = useState(snackList);
+    const [selectedSnacks, setSelectedSnacks] = useState(snackList);
+    // useEffect(() => {
+    //     setCheckedSnackList([...snackList]);
+    //     setSelectedSnacks([...snackList]);
+    // }, []);
+
+    // for debugging:
+    useEffect(() => {
+        console.log("updated state: selectedSnacks: ", selectedSnacks);
+    }, [selectedSnacks])
+
+    const toast = useToast();
+
+    const onCheck = (key) => {
+        let listCopy = JSON.parse(JSON.stringify(checkedSnackList));
+        let index = listCopy.findIndex(snack => snack.key === key);
+        listCopy[index].checked = !listCopy[index].checked;
+        console.log("Selected snack and key: ", listCopy[index].name, key);
+        setCheckedSnackList([...listCopy]);
+        let selected = listCopy.filter(snackObj => snackObj.checked === false);
+        setSelectedSnacks([...selected]);
+    }
+
+    return (
+        <View style={styles.listScreenContainer}>
+            {console.log("---Delete component loaded---")}
+            <Text style={styles.moodHeadline}>Delete snacks</Text>
+            <FlatList
+                style={styles.snacksList}
+                keyExtractor={(item) => item.key}
+                ListEmptyComponent={<Text style={styles.snacksListPlaceholder}
+                >You don't have any snacks on your list</Text>}
+                data={checkedSnackList}
+                renderItem={(snackObj) =>
+                    <TouchableOpacity
+                        key={snackObj.item.key}
+                        style={styles.defaultSnacksTouchable}
+                        onPress={() => onCheck(snackObj.item.key)}
+                    >
+                        {snackObj.item.checked === true ?
+                            (<Image source={require('../images/checkboxChecked.png')} style={styles.defaultSnacksCheckbox} />) : (<Image source={require('../images/checkboxEmpty.png')} style={styles.defaultSnacksCheckbox} />)}
+                        {snackObj.item.checked === true ?
+                            (<Text style={{ ...styles.defaultSnacksName, fontWeight: "bold" }}>{snackObj.item.name}</Text>) : (<Text style={styles.defaultSnacksName}>{snackObj.item.name}</Text>)}
+                    </TouchableOpacity>
+                }
+            />
+            <View style={styles.addScreenButtonsContainer}>
+                <CustomButton
+                    text="Cancel ✖️"
+                    width="44%"
+                    buttonStyle={{ backgroundColor: "red" }}
+                    onPress={() => {
+                        navigation.navigate("SnacksList");
+                    }} />
+                {snackList.length > 0 &&
+                    <CustomButton
+                        text="Delete 🗑️"
+                        width="44%"
+                        buttonStyle={{ backgroundColor: "green" }}
+                        onPress={() => {
+                            // need to change this check!
+                            if (selectedSnacks.length === checkedSnackList.length) {
+                                toast.show({
+                                    placement: "top",
+                                    duration: 5000,
+                                    description: `Please choose some snacks`,
+                                    style: { backgroundColor: "red" }
+                                });
+                                return;
+                            };
+                            handleDelete(selectedSnacks);
+                            toast.show({
+                                placement: "bottom",
+                                duration: 2000,
+                                description: "Your snacks list has been updated",
+                                style: { backgroundColor: "green" }
+                            });
+                            navigation.navigate("SnacksList");
+                            // }
+                        }}
+                    />}
+            </View>
+        </View>
+    )
+}
+
 const DefaultSnackList = ({ navigation, snackList, handleAddSnack }) => {
     const [defaultSnacks, setDefaultSnacks] = useState([])
     const [selectedSnacks, setSelectedSnacks] = useState([]);
@@ -274,27 +404,25 @@ const DefaultSnackList = ({ navigation, snackList, handleAddSnack }) => {
     return (
         <View style={styles.listScreenContainer}>
             <Text style={styles.moodHeadline}>Choose some snacks to add to your list...</Text>
-            <View style={styles.addScreenFormContainer}>
-                <FlatList
-                    style={styles.snacksList}
-                    keyExtractor={(item) => item.key}
-                    ListEmptyComponent={<Text style={styles.snacksListPlaceholder}
-                    >You've already added all the snacks from this list!</Text>}
-                    data={defaultSnacks}
-                    renderItem={(snackObj) =>
-                        <TouchableOpacity
-                            key={snackObj.item.key}
-                            style={styles.defaultSnacksTouchable}
-                            onPress={() => onCheck(snackObj.item.key)}
-                        >
-                            {snackObj.item.checked === true ?
-                                (<Image source={require('../images/checkboxChecked.png')} style={styles.defaultSnacksCheckbox} />) : (<Image source={require('../images/checkboxEmpty.png')} style={styles.defaultSnacksCheckbox} />)}
-                            {snackObj.item.checked === true ?
-                                (<Text style={{ ...styles.defaultSnacksName, fontWeight: "bold" }}>{snackObj.item.name}</Text>) : (<Text style={styles.defaultSnacksName}>{snackObj.item.name}</Text>)}
-                        </TouchableOpacity>
-                    }
-                />
-            </View>
+            <FlatList
+                style={styles.snacksList}
+                keyExtractor={(item) => item.key}
+                ListEmptyComponent={<Text style={styles.snacksListPlaceholder}
+                >You've already added all the snacks from this list!</Text>}
+                data={defaultSnacks}
+                renderItem={(snackObj) =>
+                    <TouchableOpacity
+                        key={snackObj.item.key}
+                        style={styles.defaultSnacksTouchable}
+                        onPress={() => onCheck(snackObj.item.key)}
+                    >
+                        {snackObj.item.checked === true ?
+                            (<Image source={require('../images/checkboxChecked.png')} style={styles.defaultSnacksCheckbox} />) : (<Image source={require('../images/checkboxEmpty.png')} style={styles.defaultSnacksCheckbox} />)}
+                        {snackObj.item.checked === true ?
+                            (<Text style={{ ...styles.defaultSnacksName, fontWeight: "bold" }}>{snackObj.item.name}</Text>) : (<Text style={styles.defaultSnacksName}>{snackObj.item.name}</Text>)}
+                    </TouchableOpacity>
+                }
+            />
             <View style={styles.addScreenButtonsContainer}>
                 <CustomButton
                     text="Cancel"
@@ -303,31 +431,32 @@ const DefaultSnackList = ({ navigation, snackList, handleAddSnack }) => {
                     onPress={() => {
                         navigation.navigate("SnacksList");
                     }} />
-                <CustomButton
-                    text="Save"
-                    width="44%"
-                    buttonStyle={{ backgroundColor: "green" }}
-                    onPress={() => {
-                        if (selectedSnacks.length === 0) {
+                {defaultSnacks.length > 0 &&
+                    <CustomButton
+                        text="Save"
+                        width="44%"
+                        buttonStyle={{ backgroundColor: "green" }}
+                        onPress={() => {
+                            if (selectedSnacks.length === 0) {
+                                toast.show({
+                                    placement: "top",
+                                    duration: 5000,
+                                    description: `Please choose some snacks`,
+                                    style: { backgroundColor: "red" }
+                                });
+                                return;
+                            };
+                            handleAddSnack(selectedSnacks);
                             toast.show({
-                                placement: "top",
-                                duration: 5000,
-                                description: `Please choose some snacks`,
-                                style: { backgroundColor: "red" }
+                                placement: "bottom",
+                                duration: 2000,
+                                description: "Your snacks list has been updated",
+                                style: { backgroundColor: "green" }
                             });
-                            return;
-                        };
-                        handleAddSnack(selectedSnacks);
-                        toast.show({
-                            placement: "bottom",
-                            duration: 2000,
-                            description: "Your snacks list has been updated",
-                            style: { backgroundColor: "green" }
-                        });
-                        navigation.navigate("SnacksList");
-                        // }
-                    }}
-                />
+                            navigation.navigate("SnacksList");
+                            // }
+                        }}
+                    />}
             </View>
         </View>
     )
@@ -343,14 +472,25 @@ const styles = StyleSheet.create({
         }),
     },
     snacksList: {
-        width: "94%",
+        width: "90%",
     },
-    snacksListPlaceholder: { textAlign: "center", fontSize: 20, fontStyle: "italic", marginTop: 8 },
+    snacksListPlaceholder: {
+        textAlign: "center",
+        fontSize: 20,
+        fontStyle: "italic",
+        marginTop: 8,
+        margin: 20,
+        marginTop: 40,
+    },
     snacksContainer: {
-        flexDirection: "row", marginTop: 4, marginBottom: 4,
-        borderColor: "#e0e0e0", borderBottomWidth: 2, alignItems: "center"
+        flexDirection: "row",
+        marginTop: 4,
+        marginBottom: 4,
+        borderColor: "#e0e0e0",
+        borderBottomWidth: 2,
+        alignItems: "center"
     },
-    snacksName: { flex: 1 },
+    snacksName: { flex: 1, fontSize: 18 },
     addScreenContainer: {
         ...Platform.select({
             ios: { paddingTop: Constants.statusBarHeight },
