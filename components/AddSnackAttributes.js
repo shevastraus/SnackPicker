@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
             ios: {},
             android: {
                 width: "96%", borderRadius: 8, borderColor: "#c0c0c0", borderWidth: 2,
-                marginLeft: 10, marginBottom: 20, marginTop: 4
+                marginLeft: 10, marginBottom: 20, marginTop: 4,
             }
         })
     },

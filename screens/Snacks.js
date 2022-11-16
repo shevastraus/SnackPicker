@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import {
-    Alert, FlatList, Image, Platform, ScrollView,
-    StyleSheet, Text, TouchableOpacity, View
-} from "react-native";
+import { FlatList, Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
-// import { StackNavigator } from "react-navigation";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-// import { Root, Toast } from "native-base";
 import { useToast } from "native-base";
 import Constants from "expo-constants";
 import startCase from 'lodash.startcase';
@@ -58,7 +53,6 @@ export default function SnacksScreen({ snackList, readItemFromStorage, navigatio
         readItemFromStorage();
     }
 
-
     const removeArrayFromStorage = async arrayToKeep => {
         const arrayStringified = JSON.stringify(arrayToKeep);
         await setItem(arrayStringified);
@@ -90,19 +84,12 @@ export default function SnacksScreen({ snackList, readItemFromStorage, navigatio
             <Stack.Screen name="AddSnacks">
                 {(props) => <AddSnacks snackList={snackList} handleAddSnack={writeItemToStorage} snackToEdit={snackToEdit} setSnackToEdit={setSnackToEdit} {...props} />}
             </Stack.Screen>
-
-
-
             <Stack.Screen name="DeleteSnacks">
                 {(props) => <DeleteSnacks
                     snackList={snackList}
                     handleDelete={removeArrayFromStorage}
                     {...props} />}
             </Stack.Screen>
-
-
-
-
             <Stack.Screen name="DefaultSnackList">
                 {(props) => <DefaultSnackList
                     snackList={snackList}
@@ -114,7 +101,7 @@ export default function SnacksScreen({ snackList, readItemFromStorage, navigatio
     );
 };
 
-const SnacksList = ({ navigation, snackList, handleDelete, setSnackToEdit }) => {
+const SnacksList = ({ navigation, snackList, setSnackToEdit }) => {
 
     const toast = useToast();
 
@@ -124,7 +111,7 @@ const SnacksList = ({ navigation, snackList, handleDelete, setSnackToEdit }) => 
         >
             <View style={styles.addScreenButtonsContainer}>
                 <CustomButton
-                    text="Add Snack"
+                    text="Add Snacks"
                     buttonStyle={{ backgroundColor: "green" }}
                     width="44%"
                     onPress={
@@ -160,45 +147,14 @@ const SnacksList = ({ navigation, snackList, handleDelete, setSnackToEdit }) => 
                         >{item.name} {item.emoji}</Text>
                         <CustomButton
                             text="Edit"
-                            buttonStyle={{ paddingLeft: 20, paddingRight: 20 }}
+                            image="📝"
+                            width={Number(130)}
+                            buttonStyle={{ marginRight: 0, marginTop: 0 }}
                             onPress={() => {
                                 setSnackToEdit(item);
                                 navigation.navigate("AddSnacks");
                             }}
                         />
-
-
-                        {/* <CustomButton
-                            text="Delete"
-                            buttonStyle={{ backgroundColor: "red" }}
-                            onPress={() => {
-                                Alert.alert(
-                                    "Please confirm",
-                                    `Are you sure you want to delete ${item.name}?`,
-                                    [
-                                        {
-                                            text: "Yes",
-                                            onPress: () => {
-                                                handleDelete(item);
-                                                toast.show({
-                                                    placement: "bottom",
-                                                    duration: 2000,
-                                                    description: `${item.name} deleted`,
-                                                    style: { backgroundColor: "red" }
-                                                });
-                                            }
-                                        },
-                                        {
-                                            text: "Cancel",
-                                            style: "cancel"
-                                        }
-                                    ],
-                                    { cancelable: true }
-                                )
-                            }}
-                        /> */}
-
-
                     </View>
                 }
             />
@@ -221,6 +177,15 @@ const AddSnacks = ({ navigation, snackList, handleAddSnack, snackToEdit, setSnac
     return (
         <ScrollView style={styles.addScreenContainer}>
             <View style={styles.addScreenInnerContainer}>
+                <View style={styles.addScreenButtonsContainer}>
+                    <CustomButton
+                        text="Choose from list of popular snacks"
+                        width="93%"
+                        onPress={() => {
+                            navigation.navigate("DefaultSnackList");
+                        }} />
+                </View>
+                <Text style={styles.addScreenManualMessage}> Or add a snack manually:</Text>
                 <View style={styles.addScreenFormContainer}>
                     <CustomTextInput label="Snack" maxLength={20} stateSetter={setName} stateFieldName={name} defaultText={name} />
 
@@ -237,6 +202,7 @@ const AddSnacks = ({ navigation, snackList, handleAddSnack, snackToEdit, setSnac
                 <View style={styles.addScreenButtonsContainer}>
                     <CustomButton
                         text="Cancel"
+                        image="✖️"
                         width="44%"
                         buttonStyle={{ backgroundColor: "red" }}
                         onPress={() => {
@@ -245,6 +211,7 @@ const AddSnacks = ({ navigation, snackList, handleAddSnack, snackToEdit, setSnac
                         }} />
                     <CustomButton
                         text="Save"
+                        image="💾"
                         width="44%"
                         buttonStyle={{ backgroundColor: "green" }}
                         onPress={() => {
@@ -281,14 +248,6 @@ const AddSnacks = ({ navigation, snackList, handleAddSnack, snackToEdit, setSnac
                         }}
                     />
                 </View>
-                <View style={styles.addScreenButtonsContainer}>
-                    <CustomButton
-                        text="Choose from list of popular snacks"
-                        width="93%"
-                        onPress={() => {
-                            navigation.navigate("DefaultSnackList");
-                        }} />
-                </View>
             </View>
         </ScrollView>
     )
@@ -297,15 +256,6 @@ const AddSnacks = ({ navigation, snackList, handleAddSnack, snackToEdit, setSnac
 const DeleteSnacks = ({ navigation, snackList, handleDelete }) => {
     const [checkedSnackList, setCheckedSnackList] = useState(snackList);
     const [selectedSnacks, setSelectedSnacks] = useState(snackList);
-    // useEffect(() => {
-    //     setCheckedSnackList([...snackList]);
-    //     setSelectedSnacks([...snackList]);
-    // }, []);
-
-    // for debugging:
-    useEffect(() => {
-        console.log("updated state: selectedSnacks: ", selectedSnacks);
-    }, [selectedSnacks])
 
     const toast = useToast();
 
@@ -313,7 +263,6 @@ const DeleteSnacks = ({ navigation, snackList, handleDelete }) => {
         let listCopy = JSON.parse(JSON.stringify(checkedSnackList));
         let index = listCopy.findIndex(snack => snack.key === key);
         listCopy[index].checked = !listCopy[index].checked;
-        console.log("Selected snack and key: ", listCopy[index].name, key);
         setCheckedSnackList([...listCopy]);
         let selected = listCopy.filter(snackObj => snackObj.checked === false);
         setSelectedSnacks([...selected]);
@@ -321,7 +270,6 @@ const DeleteSnacks = ({ navigation, snackList, handleDelete }) => {
 
     return (
         <View style={styles.listScreenContainer}>
-            {console.log("---Delete component loaded---")}
             <Text style={styles.moodHeadline}>Delete snacks</Text>
             <FlatList
                 style={styles.snacksList}
@@ -344,7 +292,8 @@ const DeleteSnacks = ({ navigation, snackList, handleDelete }) => {
             />
             <View style={styles.addScreenButtonsContainer}>
                 <CustomButton
-                    text="Cancel ✖️"
+                    text="Cancel"
+                    image="✖️"
                     width="44%"
                     buttonStyle={{ backgroundColor: "red" }}
                     onPress={() => {
@@ -352,11 +301,11 @@ const DeleteSnacks = ({ navigation, snackList, handleDelete }) => {
                     }} />
                 {snackList.length > 0 &&
                     <CustomButton
-                        text="Delete 🗑️"
+                        text="Delete"
+                        image="🗑️"
                         width="44%"
                         buttonStyle={{ backgroundColor: "green" }}
                         onPress={() => {
-                            // need to change this check!
                             if (selectedSnacks.length === checkedSnackList.length) {
                                 toast.show({
                                     placement: "top",
@@ -374,7 +323,6 @@ const DeleteSnacks = ({ navigation, snackList, handleDelete }) => {
                                 style: { backgroundColor: "green" }
                             });
                             navigation.navigate("SnacksList");
-                            // }
                         }}
                     />}
             </View>
@@ -426,6 +374,7 @@ const DefaultSnackList = ({ navigation, snackList, handleAddSnack }) => {
             <View style={styles.addScreenButtonsContainer}>
                 <CustomButton
                     text="Cancel"
+                    image="✖️"
                     width="44%"
                     buttonStyle={{ backgroundColor: "red" }}
                     onPress={() => {
@@ -434,6 +383,7 @@ const DefaultSnackList = ({ navigation, snackList, handleAddSnack }) => {
                 {defaultSnacks.length > 0 &&
                     <CustomButton
                         text="Save"
+                        image="💾"
                         width="44%"
                         buttonStyle={{ backgroundColor: "green" }}
                         onPress={() => {
@@ -497,9 +447,18 @@ const styles = StyleSheet.create({
             android: {}
         })
     },
-    addScreenInnerContainer: { flex: 1, alignItems: "center", paddingTop: 20, width: "100%" },
+    addScreenInnerContainer: {
+        flex: 1,
+        alignItems: "center",
+        paddingTop: 10,
+        width: "100%",
+    },
     addScreenFormContainer: { width: "96%" },
     addScreenButtonsContainer: { flexDirection: "row", justifyContent: "center" },
+    addScreenManualMessage: {
+        fontStyle: "italic",
+        fontSize: 18,
+    },
     fieldLabel: { marginLeft: 10 },
     pickerContainer: {
         ...Platform.select({

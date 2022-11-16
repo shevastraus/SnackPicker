@@ -53,10 +53,8 @@ const DecisionTime = ({ navigation, isSnackList }) => {
                     }
                 }}
             >
-                {/* <Image source={require("../images/its-decision-time.png")} /> */}
                 <Image source={require("../images/its-decision-time.android.png")} />
                 <Text style={{ paddingTop: 15 }}>Tap to get started!</Text>
-
             </TouchableOpacity>
         </View>
     );
@@ -114,6 +112,7 @@ const Moods = ({ navigation, snackList, snackMatchSetter }) => {
                     <View style={styles.addScreenButtonsContainer}>
                         <CustomButton
                             text="Cancel"
+                            image="✖️"
                             width="44%"
                             buttonStyle={{ backgroundColor: "red" }}
                             onPress={() => {
@@ -121,6 +120,7 @@ const Moods = ({ navigation, snackList, snackMatchSetter }) => {
                             }} />
                         <CustomButton
                             text="Decide!"
+                            image="🤤"
                             width="44%"
                             buttonStyle={{ backgroundColor: "green" }}
                             onPress={() => {
@@ -177,7 +177,6 @@ const Result = ({ navigation, snackMatch }) => {
                 }
             />
         </View>
-
     )
 }
 

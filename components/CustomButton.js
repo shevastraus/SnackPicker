@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { TouchableOpacity, Text, Button } from "react-native";
 
-const CustomButton = ({ text, onPress, buttonStyle, textStyle, width, disabled }) => {
+const CustomButton = ({ text, onPress, buttonStyle, textStyle, width, disabled, image }) => {
     return (
         <TouchableOpacity
             style={[
@@ -26,7 +26,7 @@ const CustomButton = ({ text, onPress, buttonStyle, textStyle, width, disabled }
                     },
                     textStyle
                 ]}>
-                {text}
+                {image} {text}
             </Text>
         </TouchableOpacity>
 
@@ -39,8 +39,9 @@ CustomButton.propTypes = {
     onPress: PropTypes.func.isRequired,
     buttonStyle: PropTypes.object,
     textStyle: PropTypes.object,
-    width: PropTypes.string,
-    disabled: PropTypes.string
+    // width: PropTypes.number,
+    disabled: PropTypes.string,
+    image: PropTypes.string
 };
 
 export default CustomButton;
