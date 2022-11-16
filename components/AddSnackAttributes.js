@@ -1,12 +1,12 @@
 import React from 'react';
-import { Platform, StyleSheet, Text, TextInput, View } from "react-native";
+import { Keyboard, Platform, StyleSheet, Text, View } from "react-native";
 import { Picker } from '@react-native-picker/picker';
 
 const AddSnackAttributes = ({ attributeField, state, stateSetter, attributes, isMoodSelection }) => {
     return (
         <>
             <Text style={styles.fieldLabel}>{attributeField}</Text>
-            <View style={styles.pickerContainer}>
+            <View style={styles.pickerContainer} onFocus={Keyboard.dismiss}>
                 <Picker style={styles.picker} prompt={attributeField} selectedValue={state} onValueChange={(inItemValue) => stateSetter(inItemValue)}>
                     {isMoodSelection ? <Picker.Item label="No preference" value={false} /> : <Picker.Item label="Choose one..." value="" />}
 

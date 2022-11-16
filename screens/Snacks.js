@@ -113,14 +113,14 @@ const SnacksList = ({ navigation, snackList, setSnackToEdit }) => {
                 <CustomButton
                     text="Add Snacks"
                     buttonStyle={{ backgroundColor: "green" }}
-                    width="44%"
+                    width={snackList.length > 0 ? "44%" : "96%"}
                     onPress={
                         () => {
                             navigation.navigate("AddSnacks");
                         }
                     }
                 />
-                <CustomButton
+                {snackList.length > 0 ? <CustomButton
                     text="Delete Snacks"
                     buttonStyle={{ backgroundColor: "red" }}
                     width="44%"
@@ -129,7 +129,8 @@ const SnacksList = ({ navigation, snackList, setSnackToEdit }) => {
                             navigation.navigate("DeleteSnacks");
                         }
                     }
-                />
+                /> : null}
+
             </View>
 
             <FlatList
@@ -177,7 +178,7 @@ const AddSnacks = ({ navigation, snackList, handleAddSnack, snackToEdit, setSnac
     return (
         <ScrollView style={styles.addScreenContainer}>
             <View style={styles.addScreenInnerContainer}>
-                <View style={styles.addScreenButtonsContainer}>
+                {!name ? <><View style={styles.addScreenButtonsContainer}>
                     <CustomButton
                         text="Choose from list of popular snacks"
                         width="93%"
@@ -185,9 +186,9 @@ const AddSnacks = ({ navigation, snackList, handleAddSnack, snackToEdit, setSnac
                             navigation.navigate("DefaultSnackList");
                         }} />
                 </View>
-                <Text style={styles.addScreenManualMessage}> Or add a snack manually:</Text>
+                    <Text style={styles.addScreenManualMessage}> Or add a snack manually:</Text></> : null}
                 <View style={styles.addScreenFormContainer}>
-                    <CustomTextInput label="Snack" maxLength={20} stateSetter={setName} stateFieldName={name} defaultText={name} />
+                    <CustomTextInput label="Snack" maxLength={30} stateSetter={setName} stateFieldName={name} defaultText={name} />
 
                     <AddSnackAttributes attributeField="Texture" attributes={["Crunchy/Crispy", "Chewy/Creamy", "Liquid"]} state={texture} stateSetter={setTexture} />
 
@@ -274,7 +275,7 @@ const DeleteSnacks = ({ navigation, snackList, handleDelete }) => {
             <FlatList
                 style={styles.snacksList}
                 keyExtractor={(item) => item.key}
-                ListEmptyComponent={<Text style={styles.snacksListPlaceholder}
+                ListEmptyComponent={<Text style={styles.deleteListPlaceholder}
                 >You don't have any snacks on your list</Text>}
                 data={checkedSnackList}
                 renderItem={(snackObj) =>
@@ -427,6 +428,14 @@ const styles = StyleSheet.create({
     snacksListPlaceholder: {
         textAlign: "center",
         fontSize: 20,
+        fontStyle: "italic",
+        marginTop: 8,
+        margin: 20,
+        marginTop: 40,
+    },
+    deleteListPlaceholder: {
+        textAlign: "center",
+        fontSize: 26,
         fontStyle: "italic",
         marginTop: 8,
         margin: 20,
