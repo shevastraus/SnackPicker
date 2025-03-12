@@ -4,7 +4,6 @@ import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useToast } from "native-base";
 import Constants from "expo-constants";
-import startCase from 'lodash.startcase';
 import CustomButton from '../components/CustomButton';
 import CustomTextInput from '../components/CustomTextInput';
 import AddSnackAttributes from '../components/AddSnackAttributes';
@@ -18,7 +17,7 @@ export default function SnacksScreen({ snackList, readItemFromStorage, navigatio
     const { setItem } = useAsyncStorage('@storage_key');
 
     const writeItemToStorage = async newSnack => {
-        newSnack.name = startCase(newSnack.name);
+        newSnack.name = newSnack.name ? newSnack.name[0].toUppercase() + newSnack.name.slice(1) : '';
         let newList;
         // If key exists, an item is being edited
         if (snackList.find(snack => snack.key === newSnack.key)) {
